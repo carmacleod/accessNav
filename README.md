@@ -41,7 +41,7 @@ To extend the JavaScript used in IBM Connections, first you must put your JavaSc
 ### Adding `Skipto.js` to a sample app
 The easiest way to extend the JavaScript used in IBM Connections is to start with a sample bundle, add files to it, and deploy it in your IBM Connections environment. Complete the following steps to extend the JavaScript used in IBM Connections using a sample bundle.
 
-1.  Download the following sample bundle: `com.mycompany.example_1.0.0.jar`
+1.  Download the following sample bundle: [com.mycompany.example_1.0.0.jar](http://public.dhe.ibm.com/software/dw/lotus/connections/4/reference/com.mycompany.example_1.0.0.jar)
 2.  Deploy and test the sample bundle. 
 	*  Copy the sample bundle to web resources provisioning directory for IBM Connections. The installer creates this directory at the following location: `CONNECTIONS_HOME/data/shared/provision/webresources`
 	*  Stop and start the Common Websphere Enterprise Application (common.ear) from the Websphere Application Server interface.
