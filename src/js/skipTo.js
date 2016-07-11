@@ -14,33 +14,31 @@
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * ======================================================================== */
 
+var SkipTo = {}; //Make SkipTo global so it can be referred to during events allowing for dynamic updates.
 
 (function (appConfig) {
 	"use strict";
-	var SkipTo = {};
-
 	SkipTo.prototype = {
-		headingElementsArr:  [],
-		landmarkElementsArr:  [],
-		idElementsArr:  [],
-		dropdownHTML: null,
-		config: {
-			buttonLabel:    'Skip To...',
-			menuLabel:      'Skip To and Page Outline',
-			landmarksLabel: 'Skip To',
-			headingsLabel:  'Page Outline',
-			main:      'main, [role="main"]',
-			landmarks: '[role="navigation"], [role="search"]',
-			sections:  'nav',
-			headings:  'h1, h2, h3',
-			ids:       '#SkipToA1, #SkipToA2',
-			accessKey: '0',
-			wrap: "false",
-			visibility: "onFocus",
-			customClass: "",
-			attachElement: document.body
-		},
-
+			headingElementsArr:  [],
+			landmarkElementsArr:  [],
+			idElementsArr:  [],
+			dropdownHTML: null,
+			config: {
+				buttonLabel:    'Skip To...',
+				menuLabel:      'Skip To and Page Outline',
+				landmarksLabel: 'Skip To',
+				headingsLabel:  'Page Outline',
+				main:      'main, [role="main"]',
+				landmarks: '[role="navigation"], [role="search"]',
+				sections:  'nav',
+				headings:  'h1, h2, h3',
+				ids:       '',
+				accessKey: '0',
+				wrap: "false",
+				visibility: "onFocus",
+				customClass: "",
+				attachElement: document.body
+			},
 		setUpConfig: function (appConfig) {
 			var localConfig = this.config,
 				name,
@@ -60,30 +58,17 @@
 			this.setUpConfig(appConfig);
 
 			var div = document.createElement('div'),
-			attachElement = (!this.config.attachElement.nodeType) ? document.querySelector(this.config.attachElement) : this.config.attachElement,
-			htmlStr = '';
+			attachElement = (!this.config.attachElement.nodeType) ? document.querySelector(this.config.attachElement) : this.config.attachElement;
 			div.setAttribute('id', 'skipToMenu');
 			div.setAttribute('role', 'complementary');
 			div.setAttribute('title', 'Skip To Keyboard Navigation');
+			
 
 			this.addStyles("@@cssContent");
 
-			this.dropdownHTML = '<a accesskey="'+ this.config.accessKey +'" tabindex="0" data-wrap="'+ this.config.wrap +'"class="dropMenu-toggle skipTo '+ this.config.visibility + ' '+ this.config.customClass +'" id="drop4" role="button" aria-haspopup="true" ';
-			this.dropdownHTML += 'aria-expanded="false" data-toggle="dropMenu" href="#" data-target="menu1">' + this.config.buttonLabel + '<b class="caret"></b></a>';
-			this.dropdownHTML += '<ul id="menu1" class="dropMenu-menu" role="menu" aria-label="' + this.config.menuLabel + '" style="top:3%; text-align:left">';
+			this.getdropdownHTML();
 
-			this.getLandMarks(this.config.main);
-			this.getLandMarks(this.config.landmarks);
-			this.getSections(this.config.sections);
-
-			this.getIdElements();
-
-			this.getHeadings();
-
-			htmlStr = this.getdropdownHTML();
-			this.dropdownHTML += htmlStr + '</ul>';
-
-			if ( htmlStr.length >0 ) {
+			if ( this.dropdownHTML !== null && this.dropdownHTML.length > 0 ) {
 				div.className = "dropMenu";
 				attachElement.insertBefore(div, attachElement.firstChild);
 				div.innerHTML = this.dropdownHTML;
@@ -165,12 +150,14 @@
 		getHeadings: function () {
 			var targets = this.config.headings;
 			if (typeof targets !== 'string' || targets.length === 0) return;
-			var headings = document.querySelectorAll(targets),
+			var headings,
 				i,
 				j,
 				heading,
 				role,
 				id;
+			
+			headings = document.querySelectorAll(targets);
 			for (i = 0, j = headings.length; i < j; i = i + 1) {
 				heading = headings[i];
 				role = heading.getAttribute('role');
@@ -201,12 +188,12 @@
 				//var visibility = computedStyle.getPropertyValue('visibility');
 				var hidden = el.getAttribute('hidden');
 				var ariaHidden = el.getAttribute('aria-hidden');
-				var clientRect = el.getBoundingClientRect();
+				var clientRect = el.getBoundingClientRect(); //- *temporarily support empty elements
 
 				if ((display === 'none') ||
 						(visibility === 'hidden') ||
 						(hidden !== null) ||
-						(ariaHidden === 'true') ||
+						(ariaHidden === 'true') || /*temporarily support empty elements, i.e. landmarks that have yet to be populated. Need to add event listener!*/
 						(clientRect.height < 4) ||
 						(clientRect.width < 4)) {
 					return false;
@@ -220,7 +207,8 @@
 
 		getSections: function (targets) {
 			if (typeof targets !== 'string' || targets.length === 0) return;
-			var sections = document.querySelectorAll(targets),
+			
+			var sections,
 				k,
 				l,
 				section,
@@ -228,7 +216,8 @@
 				role,
 				val,
 				name;
-
+			
+			sections = document.querySelectorAll(targets);
 			for (k = 0, l = sections.length; k < l; k = k + 1) {
 				section = sections[k];
 				role = section.getAttribute(role);
@@ -258,7 +247,7 @@
 
 		getLandMarks: function (targets) {
 			if (typeof targets !== 'string' || targets.length === 0) return;
-			var landmarks = document.querySelectorAll(targets),
+			var landmarks,
 				k,
 				l,
 				landmark,
@@ -266,7 +255,9 @@
 				role,
 				name,
 				val;
-
+			
+			landmarks = document.querySelectorAll(targets);
+			
 			for (k = 0, l = landmarks.length; k < l; k = k + 1) {
 				landmark = landmarks[k];
 				role = landmark.getAttribute('role');
@@ -306,34 +297,50 @@
 		},
 
 		getIdElements: function () {
-			var els = document.querySelectorAll(this.config.ids),
+			var els,
 				i,
 				j,
 				el,
 				id,
 				val;
+			if (this.config.ids){
+				els = document.querySelectorAll(this.config.ids);
+				for (i = 0, j = els.length; i < j; i = i + 1) {
+					el = els[i];
+					id = el.getAttribute('id');
+					/*val = el.innerHTML.replace(/<\/?[^>]+>/gi, '').replace(/\s+/g, ' ').trim();*/
+					val = el.innerHTML.replace(/<\/?[^>]+>/gi, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, "");/*for IE8*/
 
-			for (i = 0, j = els.length; i < j; i = i + 1) {
-				el = els[i];
-				id = el.getAttribute('id');
-				/*val = el.innerHTML.replace(/<\/?[^>]+>/gi, '').replace(/\s+/g, ' ').trim();*/
-				val = el.innerHTML.replace(/<\/?[^>]+>/gi, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, "");/*for IE8*/
-
-				if (val.length > 30)	val = val.replace(val, val.substr(0, 30)	+	'...');
-				this.idElementsArr[id] = "id: " + val;
+					if (val.length > 30)	val = val.replace(val, val.substr(0, 30)	+	'...');
+					this.idElementsArr[id] = "id: " + val;
+				}
 			}
 		},
 
-		getdropdownHTML: function(){
+		getdropdownMenu: function() {
 			var key,
-				val,
-				htmlStr = '',
-				landmarkSep = true,
-				headingSep = true,
-				headingClass = '';
-
-			// window.console.log(this.elementsArr);
+			val,
+			htmlStr = '',
+			landmarkSep = true,
+			headingSep = true,
+			headingClass = '';
 			
+			//Reset arrays
+			this.headingElementsArr = [];
+			this.landmarkElementsArr =  [];
+			this.idElementsArr =  [];
+			
+			//This function builds the list of landmarks/sections, ids and heading for the bootstrap dropdownMenu
+			
+			
+			//Populate the arrays with landmarks/sections, headings and id elements
+			this.getLandMarks(this.config.main);
+			this.getLandMarks(this.config.landmarks);
+			this.getSections(this.config.sections);
+			this.getIdElements();
+			this.getHeadings();
+						
+
 			//IE8 fix: for...in loop enumerates over all properties in an object including its prototype. This was returning some undesirable items such as indexof
 			//Make sure that the key is not from the prototype.
 			for (key in this.landmarkElementsArr) {
@@ -380,8 +387,27 @@
 					htmlStr += '</a></li>';
 				}
 			}
-
+						
 			return htmlStr;
+		},
+		//Get the html for the dropDown toggle button and menu. This uses the Bootstrap JS DropDown.
+		//See Bootstrap dropDown http://www.w3schools.com/bootstrap/bootstrap_dropdowns.asp for more details.
+		getdropdownHTML: function(){
+			
+			//Create a button for the dropMenu.
+			this.dropdownHTML = '<a accesskey="'+ this.config.accessKey +'" tabindex="-1" data-wrap="'+ this.config.wrap +'"class="dropMenu-toggle skipTo '+ this.config.visibility + ' '+ this.config.customClass +'" id="drop4" role="button" aria-haspopup="true" ';
+			this.dropdownHTML += 'aria-expanded="false" data-toggle="dropMenu" href="#" data-target="menu1">' + this.config.buttonLabel + '<b class="caret"></b></a>';
+			
+			//Create the unordered list element
+			this.dropdownHTML += '<ul id="menu1" class="dropMenu-menu" role="menu" aria-label="' + this.config.menuLabel + '" style="top:3%; text-align:left">';
+			window.console.log("The toggle button plus UL: " + this.dropdownHTML);
+			
+			//Add dropdown Menu items
+			this.dropdownHTML += this.getdropdownMenu();
+			window.console.log("The complete dropdown menu html: " + this.dropdownHTML);
+			
+			//Don't forget closing tag
+			this.dropdownHTML += '</ul>';
 		},
 
 		addStyles: function (cssString) {
@@ -412,6 +438,35 @@
 					element.scrollIntoView(true); //IE8 - Make sure to scroll to top
 				}
 			}, false);
+			//document.getElementById("drop4").addEventListener('focus',function(){
+				//var menuHTML = '',
+				//newMenu,
+				//menuEl;
+				
+				//Note: might be better to use the dropdown show event
+				//window.console.log("SkipTo received focus!");
+				
+				//Make sure drop menu already exists
+				//menuEl = document.getElementById("menu1");
+				
+				//if (menuEl && menuEl.parentNode) {
+					//Get the html for the drop down menu including landmarks/sections, headings and id arrays
+					//menuHTML = SkipTo.prototype.getdropdownMenu();
+				//	window.console.log("New menu as generated in focus event" + menuHTML);
+					
+					//if ( menuHTML.length > 0 ) {
+						//Create a new menu element by cloning existing ul.
+						//newMenu = document.createElement("ul");
+						//newMenu = menuEl.cloneNode(false);
+						//newMenu.innerHTML = menuHTML;
+														
+						//Replace the current menuEl ("menu1") with the newly generated menu. Note: new menu is first argument.
+						//menuEl.parentNode.replaceChild(newMenu,menuEl);
+					//}
+				//}
+				
+			//}, false);
+			
 		}
 	};
 
