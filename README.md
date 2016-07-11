@@ -8,16 +8,15 @@ Copyright (c) 2014, eBay Software Foundation. All rights reserved.
 
 The accessNav script is based on the SkipTo version 2.1 script and is a replacement for the classic *Skipnav* link. It creates a drop-down menu that lists the links to the important places on the current web page. Once accessNav is installed and configured, its menu makes it easier for keyboard and screen reader users to quickly jump to a location by choosing the location from the menu.
 
-![Example Screen Shot](images/example_screen_shot.png "Example Screen Shot") - Moe to give Fran an updated screen shot.
-
+![Example Screen Shot](images/A11yAdvisorwSkipTo.png "Example Screen Shot") 
 ## How it works
-1.  The accessNav *Skip To* menu becomes visible the first time the user tabs into the page. 
+1.  By default the accessNav *Skip To* menu becomes visible the first time the user tabs into the page or may appear after the page is loaded if the visibility is set to onLoad.
 2.  Once the keyboard focus is on the *Skip To* menu, selecting the **Enter** key or the **Spacebar** will display the list of high-level headings and landmarks on the current page.
 3.  Use the arrow keys to select a choice; then select **Enter** to skip to it.
-4.  To return to the *Skip To* menu, use the built-in access key (0 by default). Refer to the notes on [Access keys](#access-keys) for more information.
+4.  To return to the *Skip To* menu, use the built-in access key (0 by default) which opens the menu and moves focus to it. Refer to the notes on [Access keys](#access-keys) for more information.
 
 ## <a name="enabling_javascript">Enabling the JavaScript on your web page</a>
-All you need is either `SkipTo.js` or `SkipTo.min.js` from the `compiled/js` directory. Please note that `SkipTo.min.js` is a minified (a lighter version) of the script. (NOTE: UPDATE ALL FILENAMES IF MOE CHANGES IT TO ACCESSNAV)  If you would like to be able to debug your production-ready script, include the provided `SkipTo.min.map` file as well.
+All you need is either `SkipTo.js` or `SkipTo.min.js` from the `compiled/js` directory. Please note that `SkipTo.min.js` is a minified (light-weight) version of the script. (NOTE: UPDATE ALL FILENAMES WHEN MOE CHANGES IT TO ACCESSNAV)  If you would like to be able to debug your production-ready script, include the provided `SkipTo.min.map` file as well.
 
 To use the accessNav script, just include it at the bottom of your HTML page or template as follows:
 
